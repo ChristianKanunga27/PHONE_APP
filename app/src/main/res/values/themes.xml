@@ -6,4 +6,13 @@
     </style>
 
     <style name="Theme.PHONE_SHOP_APP" parent="Base.Theme.PHONE_SHOP_APP" />
+
+    <style name="Theme.PHONE_SHOP_APP.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.PHONE_SHOP_APP.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.PHONE_SHOP_APP.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
