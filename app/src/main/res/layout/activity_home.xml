@@ -5,228 +5,260 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/white">
 
-    <!--  MAIN CONTENT  -->
-    <ScrollView
-        android:id="@+id/main"
+    <!-- App bar + main content -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:background="#F5F5F5">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/pale_black"
+            android:titleTextColor="@color/white"
+            android:title="@string/title_activity_home"
+            app:popupTheme="@style/Theme.MaterialComponents.Light" />
 
-            <!-- Banner -->
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/home"/>
+        <!--  MAIN CONTENT  -->
+        <ScrollView
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:background="@color/white">
 
-            <!-- Search -->
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_margin="16dp"
-                android:background="@drawable/round_box"
-                android:hint="🔍 Search phone..."
-                android:padding="14dp"
-                android:textSize="16sp"/>
-
-            <!-- Section Title -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Popular Phones"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="8dp"/>
-
-            <!-- PHONE CARD 1 -->
-            <androidx.cardview.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="8dp">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <!-- Banner -->
+
+                <!-- Search -->
+                <EditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/round_box"
+                    android:hint="🔍 Search phone..."
+                    android:padding="14dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black"
+                    android:inputType="text"
+                    android:autofillHints="username" />
+
+                <!-- Section Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popular Phones"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- PHONE CARD 1 -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="14dp">
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/alice_blue"
+                    app:strokeColor="@color/card_border_gray"
+                    app:strokeWidth="1dp">
 
-                    <ImageView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/phone1"/>
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                    <TextView
-                        android:text="Samsung Galaxy S24"
-                        android:textStyle="bold"
-                        android:textSize="18sp"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/phone1"
+                            android:contentDescription="Samsung Galaxy S24"/>
 
-                    <TextView
-                        android:text="8GB RAM • 256GB Storage"
-                        android:textColor="#777777"
-                        android:layout_marginTop="4dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <TextView
+                            android:text="Samsung Galaxy S24"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:layout_marginTop="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"/>
 
-                    <TextView
-                        android:text="TZS 2,300,000"
-                        android:textColor="#009688"
-                        android:textStyle="bold"
-                        android:textSize="17sp"
-                        android:layout_marginTop="6dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <TextView
+                            android:text="8GB RAM • 256GB Storage"
+                            android:textColor="#777777"
+                            android:layout_marginTop="4dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buy1"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="BUY NOW"
-                        android:textAllCaps="false"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white"
-                        android:layout_marginTop="14dp"
-                        app:cornerRadius="14dp"
-                        app:backgroundTint="#2E7D32"/>
+                        <TextView
+                            android:text="TZS 2,300,000"
+                            android:textColor="#009688"
+                            android:textStyle="bold"
+                            android:textSize="17sp"
+                            android:layout_marginTop="6dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buy1"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:text="BUY NOW"
+                            android:textAllCaps="false"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:layout_marginTop="14dp"
+                            app:cornerRadius="14dp"
+                            app:backgroundTint="#2E7D32"/>
 
-            <!-- PHONE CARD 2 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="8dp">
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                <LinearLayout
+                <!-- PHONE CARD 2 -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="14dp">
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/alice_blue"
+                    app:strokeColor="@color/card_border_gray"
+                    app:strokeWidth="1dp">
 
-                    <ImageView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/phone2"/>
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                    <TextView
-                        android:text="iPhone 15 Pro"
-                        android:textStyle="bold"
-                        android:textSize="18sp"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/phone2"
+                            android:contentDescription="iPhone 15 Pro"/>
 
-                    <TextView
-                        android:text="6GB RAM • 256GB Storage"
-                        android:textColor="#777777"
-                        android:layout_marginTop="4dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <TextView
+                            android:text="iPhone 15 Pro"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:layout_marginTop="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"/>
 
-                    <TextView
-                        android:text="TZS 3,000,000"
-                        android:textColor="#009688"
-                        android:textStyle="bold"
-                        android:textSize="17sp"
-                        android:layout_marginTop="6dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <TextView
+                            android:text="6GB RAM • 256GB Storage"
+                            android:textColor="#777777"
+                            android:layout_marginTop="4dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buy2"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="BUY NOW"
-                        android:textAllCaps="false"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white"
-                        android:layout_marginTop="14dp"
-                        app:cornerRadius="14dp"
-                        app:backgroundTint="#2E7D32"/>
+                        <TextView
+                            android:text="TZS 3,000,000"
+                            android:textColor="#009688"
+                            android:textStyle="bold"
+                            android:textSize="17sp"
+                            android:layout_marginTop="6dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buy2"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:text="BUY NOW"
+                            android:textAllCaps="false"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:layout_marginTop="14dp"
+                            app:cornerRadius="14dp"
+                            app:backgroundTint="#2E7D32"/>
 
-            <!-- PHONE CARD 3 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="8dp">
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                <LinearLayout
+                <!-- PHONE CARD 3 -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="14dp">
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/alice_blue"
+                    app:strokeColor="@color/card_border_gray"
+                    app:strokeWidth="1dp">
 
-                    <ImageView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/phone3"/>
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                    <TextView
-                        android:text="Tecno Camon 30"
-                        android:textStyle="bold"
-                        android:textSize="18sp"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/phone3"
+                            android:contentDescription="Tecno Camon 30"/>
 
-                    <TextView
-                        android:text="8GB RAM • 128GB Storage"
-                        android:textColor="#777777"
-                        android:layout_marginTop="4dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <TextView
+                            android:text="Tecno Camon 30"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:layout_marginTop="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"/>
 
-                    <TextView
-                        android:text="TZS 750,000"
-                        android:textColor="#009688"
-                        android:textStyle="bold"
-                        android:textSize="17sp"
-                        android:layout_marginTop="6dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <TextView
+                            android:text="8GB RAM • 128GB Storage"
+                            android:textColor="#777777"
+                            android:layout_marginTop="4dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buy3"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="BUY NOW"
-                        android:textAllCaps="false"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white"
-                        android:layout_marginTop="14dp"
-                        app:cornerRadius="14dp"
-                        app:backgroundTint="#2E7D32"/>
+                        <TextView
+                            android:text="TZS 750,000"
+                            android:textColor="#009688"
+                            android:textStyle="bold"
+                            android:textSize="17sp"
+                            android:layout_marginTop="6dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buy3"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:text="BUY NOW"
+                            android:textAllCaps="false"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:layout_marginTop="14dp"
+                            app:cornerRadius="14dp"
+                            app:backgroundTint="#2E7D32"/>
 
-        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-    </ScrollView>
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!--  SIDEBAR -->
     <com.google.android.material.navigation.NavigationView
@@ -234,6 +266,10 @@
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/nav_menu_bg_black"
+        app:itemBackground="@drawable/nav_item_bg"
+        app:itemTextColor="@color/white"
+        app:itemIconTint="@color/white"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu"/>
 

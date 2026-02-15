@@ -23,6 +23,18 @@
             android:name=".CreateAccount"
             android:exported="false" />
         <activity
+            android:name=".NewPhone"
+            android:exported="false" />
+        <activity
+            android:name=".Orders"
+            android:exported="false" />
+        <activity
+            android:name=".Settings"
+            android:exported="false" />
+        <activity
+            android:name=".Account"
+            android:exported="false" />
+        <activity
             android:name=".Login"
             android:exported="true" />
         <activity

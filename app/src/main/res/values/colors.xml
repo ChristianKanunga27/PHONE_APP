@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Fix black/white colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- UI palette -->
+    <color name="pale_black">#FF2B2B2B</color>
+    <color name="alice_blue">#F0F8FF</color>
+    <color name="card_border_gray">#FFBDBDBD</color>
+
+    <!-- Navigation header and menu backgrounds -->
+    <color name="nav_header_grey">#FFEFEFEF</color>
+    <color name="nav_menu_bg_black">#FF000000</color>
 </resources>
