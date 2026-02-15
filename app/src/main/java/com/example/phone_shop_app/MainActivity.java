@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,5 +25,13 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // 🔹 Move to Login after 2 seconds
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
+            Intent intent = new Intent(MainActivity.this, Login.class);
+            startActivity(intent);
+            finish(); // close MainActivity
+
+        }, 2000); // 2000 milliseconds = 2 seconds
     }
 }
