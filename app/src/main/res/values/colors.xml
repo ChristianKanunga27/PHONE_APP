@@ -12,4 +12,7 @@
     <!-- Navigation header and menu backgrounds -->
     <color name="nav_header_grey">#FFEFEFEF</color>
     <color name="nav_menu_bg_black">#FF000000</color>
+
+    <!-- Buttons -->
+    <color name="sign_in_blue">#FF1976D2</color>
 </resources>
