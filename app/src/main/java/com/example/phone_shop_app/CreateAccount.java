@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -46,13 +45,25 @@ public class CreateAccount extends AppCompatActivity {
 
         registerBtn.setOnClickListener(v -> {
 
-            String email = edtEmail.getText().toString();
-            String password = edtPassword.getText().toString();
+            String email = edtEmail.getText().toString().trim();
+            String password = edtPassword.getText().toString().trim();
+
+            // 1. Add input validation
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 2. Prevent the admin from creating an account via this form
+            if ("kanungachristian@gmail.com".equalsIgnoreCase(email)) {
+                Toast.makeText(this, "This email is reserved. Please use a different email.", Toast.LENGTH_LONG).show();
+                return;
+            }
 
             new Thread(() -> {
                 try {
 
-                    URL url = new URL("http://192.168.1.164:3000/register");
+                    URL url = new URL("http://192.168.1.164:3000/register"); // Ensure this IP is correct for your network
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     conn.setRequestMethod("POST");
@@ -63,23 +74,29 @@ public class CreateAccount extends AppCompatActivity {
                     jsonParam.put("email", email);
                     jsonParam.put("password", password);
 
-                    OutputStream os = conn.getOutputStream();
-                    os.write(jsonParam.toString().getBytes());
-                    os.flush();
-                    os.close();
+                    // Use try-with-resources for safer stream handling
+                    try (OutputStream os = conn.getOutputStream()) {
+                        os.write(jsonParam.toString().getBytes());
+                        os.flush();
+                    }
 
                     int responseCode = conn.getResponseCode();
 
                     runOnUiThread(() -> {
                         if (responseCode == 200) {
-                            Toast.makeText(this, "Registered Successfully", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Registered Successfully! Please log in.", Toast.LENGTH_LONG).show();
+                            // 3. On success, navigate to the Login screen
+                            Intent intent = new Intent(CreateAccount.this, Login.class);
+                            startActivity(intent);
+                            finish(); // Close this activity so the user can't go back to it
                         } else {
-                            Toast.makeText(this, "Registration Failed", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Registration Failed. Please try again.", Toast.LENGTH_LONG).show();
                         }
                     });
 
                 } catch (Exception e) {
                     e.printStackTrace();
+                    runOnUiThread(() -> Toast.makeText(this, "An error occurred during registration.", Toast.LENGTH_SHORT).show());
                 }
             }).start();
         });
