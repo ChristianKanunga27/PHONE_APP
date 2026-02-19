@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- You can add any toolbar-specific items here -->
+    <!-- For example, a logout button -->
+    <item
+        android:id="@+id/toolbar_logout"
+        android:title="Logout"
+        app:showAsAction="ifRoom" />
+
+</menu>

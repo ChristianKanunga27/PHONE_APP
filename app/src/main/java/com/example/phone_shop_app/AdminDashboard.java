@@ -2,45 +2,89 @@ package com.example.phone_shop_app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
-// The class name is now corrected to match the file name 'AdminDashboard.java'
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
+
 public class AdminDashboard extends AppCompatActivity {
+
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
 
-        Button btnAddPhone = findViewById(R.id.btnAddPhone);
-        Button btnViewOrders = findViewById(R.id.btnViewOrders);
+        toolbar = findViewById(R.id.adminToolbar);
+        setSupportActionBar(toolbar);
 
-        // Set listener for the "Add New Phone" button
-        btnAddPhone.setOnClickListener(v -> {
-            // TODO: Create a new Activity called 'AddPhoneActivity' to handle this.
-            // This new activity will have a form with fields for:
-            // - Phone Picture (using an ImageView and an Image Picker)
-            // - Phone Price (EditText)
-            // - Phone Description (EditText)
-            // - A 'Save' button to send the data to your server.
-            //
-            // Intent intent = new Intent(AdminDashboard.this, AddPhoneActivity.class);
-            // startActivity(intent);
+        drawerLayout = findViewById(R.id.admin_drawer);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.nav_open, R.string.nav_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
 
-            Toast.makeText(this, "TODO: Open 'Add Phone' screen", Toast.LENGTH_SHORT).show();
+        navigationView = findViewById(R.id.admin_nav_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_admin_dashboard) {
+                // Already here
+            } else if (id == R.id.nav_add_phone) {
+                startActivity(new Intent(AdminDashboard.this, AddPhoneActivity.class));
+            } else if (id == R.id.nav_manage_phones) {
+                // startActivity(new Intent(AdminDashboard.this, ManagePhonesActivity.class));
+            } else if (id == R.id.nav_admin_orders) {
+                // startActivity(new Intent(AdminDashboard.this, Orders.class));
+            } else if (id == R.id.nav_admin_logout) {
+                startActivity(new Intent(AdminDashboard.this, Login.class));
+                finish();
+            }
+
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         });
+    }
 
-        // Set listener for the "View Client Orders" button
-        btnViewOrders.setOnClickListener(v -> {
-            // TODO: Create a new Activity called 'ViewOrdersActivity'.
-            // This new activity will fetch and display a list of orders from your backend.
-            //
-            // Intent intent = new Intent(AdminDashboard.this, ViewOrdersActivity.class);
-            // startActivity(intent);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // This line will now work correctly because the file exists.
+        getMenuInflater().inflate(R.menu.admin_toolbar_menu, menu);
+        return true;
+    }
 
-            Toast.makeText(this, "TODO: Open 'View Orders' screen", Toast.LENGTH_SHORT).show();
-        });
+    // ✅ ADDED THIS METHOD TO HANDLE TOOLBAR CLICKS
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.toolbar_logout) {
+            // Handle the toolbar logout click
+            startActivity(new Intent(AdminDashboard.this, Login.class));
+            finish(); // Close the dashboard
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
