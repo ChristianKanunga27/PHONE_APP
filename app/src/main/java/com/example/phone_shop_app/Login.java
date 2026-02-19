@@ -19,6 +19,11 @@ public class Login extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
+    // --- Admin Credentials ---
+    private static final String ADMIN_EMAIL = "christiankanunga@gmail.com";
+    private static final String ADMIN_PASSWORD = "kanunga@27";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +71,17 @@ public class Login extends AppCompatActivity {
                 return;
             }
 
-            // 🔥 Firebase Authentication Login
+            // ✅ --- ADDED: Special check for hardcoded admin credentials ---
+            if (ADMIN_EMAIL.equalsIgnoreCase(email) && ADMIN_PASSWORD.equals(password)) {
+                Toast.makeText(Login.this, "Admin Login Successful", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Login.this, AdminDashboard.class);
+                startActivity(intent);
+                finish(); // Close the login activity
+                return; // Stop further execution
+            }
+
+
+            // 🔥 Firebase Authentication Login (for all other users)
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

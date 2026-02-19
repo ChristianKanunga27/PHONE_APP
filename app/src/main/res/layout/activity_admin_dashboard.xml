@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/admin_drawer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <!-- MAIN CONTENT -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -29,7 +30,7 @@
             android:padding="20dp">
 
             <TextView
-                android:text="Welcome Admin 👑"
+                android:text="Welcome christian kanunga"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
