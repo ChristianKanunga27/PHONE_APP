@@ -1,6 +1,5 @@
 package com.example.phone_shop_app;
 
-import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
@@ -12,39 +11,37 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddPhoneActivity extends AppCompatActivity {
 
     private EditText edtName, edtDescription, edtPrice;
     private ImageView imgPhone;
     private Button btnSelectImage, btnAddPhone;
-
     private Uri selectedImageUri;
+
     private ActivityResultLauncher<String> pickImageLauncher;
-
     private FirebaseFirestore db;
-    private StorageReference storageRef;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_phone);
 
-        // ⚡ Fix: Use XML IDs exactly
-        edtName = findViewById(R.id.etPhoneName);        // was edtPhoneName
+        edtName = findViewById(R.id.etPhoneName);
         edtDescription = findViewById(R.id.etDescription);
         edtPrice = findViewById(R.id.etPrice);
         imgPhone = findViewById(R.id.imgPhone);
         btnSelectImage = findViewById(R.id.btnSelectImage);
-        btnAddPhone = findViewById(R.id.btnSavePhone);  // Save button in XML
+        btnAddPhone = findViewById(R.id.btnSavePhone);
 
-        // Firebase
         db = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference();
 
         // Image picker
         pickImageLauncher = registerForActivityResult(
@@ -58,10 +55,10 @@ public class AddPhoneActivity extends AppCompatActivity {
         );
 
         btnSelectImage.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
-        btnAddPhone.setOnClickListener(v -> addPhone());
+        btnAddPhone.setOnClickListener(v -> uploadPhone());
     }
 
-    private void addPhone() {
+    private void uploadPhone() {
         String name = edtName.getText().toString().trim();
         String description = edtDescription.getText().toString().trim();
         String priceStr = edtPrice.getText().toString().trim();
@@ -79,21 +76,46 @@ public class AddPhoneActivity extends AppCompatActivity {
             return;
         }
 
-        String filename = "phones/" + System.currentTimeMillis() + ".jpg";
-        StorageReference phoneRef = storageRef.child(filename);
+        // Upload image to Cloudinary using an UNSIGNED preset
+        MediaManager.get().upload(selectedImageUri)
+                .unsigned("phones_preset") // <-- your unsigned upload preset name in Cloudinary
+                .option("folder", "phones")
+                .callback(new UploadCallback() {
+                    @Override
+                    public void onStart(String requestId) {
+                        Toast.makeText(AddPhoneActivity.this, "Uploading image...", Toast.LENGTH_SHORT).show();
+                    }
 
-        phoneRef.putFile(selectedImageUri)
-                .addOnSuccessListener(taskSnapshot ->
-                        phoneRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                            PhoneModel phone = new PhoneModel(name, description, price, uri.toString());
-                            db.collection("phones")
-                                    .add(phone)
-                                    .addOnSuccessListener(docRef ->
-                                            Toast.makeText(this, "Phone added successfully", Toast.LENGTH_LONG).show())
-                                    .addOnFailureListener(e ->
-                                            Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
-                        }))
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                    @Override
+                    public void onProgress(String requestId, long bytes, long totalBytes) { }
+
+                    @Override
+                    public void onSuccess(String requestId, Map resultData) {
+                        String imageUrl = (String) resultData.get("secure_url");
+
+                        // Save phone data to Firestore
+                        Map<String, Object> phone = new HashMap<>();
+                        phone.put("name", name);
+                        phone.put("description", description);
+                        phone.put("price", price);
+                        phone.put("imageUrl", imageUrl);
+
+                        db.collection("phones")
+                                .add(phone)
+                                .addOnSuccessListener(docRef ->
+                                        Toast.makeText(AddPhoneActivity.this, "Phone added successfully!", Toast.LENGTH_LONG).show())
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(AddPhoneActivity.this, "Failed to save phone: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                    }
+
+                    @Override
+                    public void onError(String requestId, ErrorInfo error) {
+                        Toast.makeText(AddPhoneActivity.this, "Upload failed: " + error.toString(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onReschedule(String requestId, ErrorInfo error) { }
+                })
+                .dispatch();
     }
 }

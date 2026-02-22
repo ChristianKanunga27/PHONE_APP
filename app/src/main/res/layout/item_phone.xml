@@ -1,43 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="4dp">
+    android:layout_margin="16dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/alice_blue"
+    app:strokeColor="@color/card_border_gray"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="14dp">
 
+        <!-- Phone Image -->
+        <ImageView
+            android:id="@+id/imgPhoneItem"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerInside"
+            android:contentDescription="Phone Image"
+            android:src="@drawable/ic_launcher_background" />
+
+        <!-- Phone Name -->
         <TextView
             android:id="@+id/tvPhoneName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="Phone Name"
-            android:textStyle="bold"
-            android:textSize="18sp"/>
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
+        <!-- Phone Description -->
         <TextView
             android:id="@+id/tvPhoneDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text="Phone Description"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"/>
+            android:textColor="#777777"
+            android:textSize="14sp" />
 
+        <!-- Phone Price -->
         <TextView
             android:id="@+id/tvPhonePrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:text="TZS 0"
-            android:textStyle="bold"
             android:textColor="#009688"
-            android:layout_marginTop="6dp"/>
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <!-- Buy Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBuy"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="14dp"
+            android:text="BUY NOW"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            app:backgroundTint="#2E7D32"
+            app:cornerRadius="14dp" />
 
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+
+</com.google.android.material.card.MaterialCardView>

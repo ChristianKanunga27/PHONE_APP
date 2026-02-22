@@ -1,7 +1,6 @@
 package com.example.phone_shop_app;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.EditText;
@@ -36,6 +35,7 @@ public class ManagePhonesActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+        // Use Admin Adapter that has edit/delete functionality
         adapter = new PhoneAdapter(this, phoneList);
         recyclerView.setAdapter(adapter);
 
@@ -50,7 +50,7 @@ public class ManagePhonesActivity extends AppCompatActivity {
                         phoneList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             PhoneModel phone = doc.toObject(PhoneModel.class);
-                            phone.id = doc.getId();
+                            phone.id = doc.getId(); // store Firestore ID
                             phoneList.add(phone);
                         }
                         adapter.notifyDataSetChanged();
@@ -66,22 +66,23 @@ public class ManagePhonesActivity extends AppCompatActivity {
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(50, 40, 50, 10);
+        int padding = (int) (16 * getResources().getDisplayMetrics().density);
+        layout.setPadding(padding, padding, padding, padding);
 
         EditText inputName = new EditText(this);
         inputName.setHint("Name");
-        inputName.setText(phone.name);
+        inputName.setText(phone.getName());
         layout.addView(inputName);
 
         EditText inputDesc = new EditText(this);
         inputDesc.setHint("Description");
-        inputDesc.setText(phone.description);
+        inputDesc.setText(phone.getDescription());
         layout.addView(inputDesc);
 
         EditText inputPrice = new EditText(this);
         inputPrice.setHint("Price");
         inputPrice.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        inputPrice.setText(String.valueOf(phone.price));
+        inputPrice.setText(String.valueOf(phone.getPrice()));
         layout.addView(inputPrice);
 
         builder.setView(layout);
@@ -89,7 +90,13 @@ public class ManagePhonesActivity extends AppCompatActivity {
         builder.setPositiveButton("Save", (dialog, which) -> {
             String newName = inputName.getText().toString().trim();
             String newDesc = inputDesc.getText().toString().trim();
-            double newPrice = Double.parseDouble(inputPrice.getText().toString().trim());
+            double newPrice = 0;
+            try {
+                newPrice = Double.parseDouble(inputPrice.getText().toString().trim());
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid price", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             DocumentReference docRef = db.collection("phones").document(phone.id);
             docRef.update(
@@ -104,7 +111,7 @@ public class ManagePhonesActivity extends AppCompatActivity {
             );
         });
 
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         builder.show();
     }
