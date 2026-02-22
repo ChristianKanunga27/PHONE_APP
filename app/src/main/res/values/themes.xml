@@ -1,8 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- Base application theme -->
     <style name="Base.Theme.PHONE_SHOP_APP" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- Splash Screen Background WHITE -->
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+
+
+        <!-- Optional icon background -->
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/white</item>
+
     </style>
 
     <style name="Theme.PHONE_SHOP_APP" parent="Base.Theme.PHONE_SHOP_APP" />
@@ -12,7 +19,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.PHONE_SHOP_APP.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.PHONE_SHOP_APP.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.PHONE_SHOP_APP.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.PHONE_SHOP_APP.PopupOverlay"
+        parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

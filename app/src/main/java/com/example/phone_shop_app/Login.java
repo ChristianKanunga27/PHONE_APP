@@ -21,7 +21,7 @@ public class Login extends AppCompatActivity {
 
     // --- Admin Credentials ---
     private static final String ADMIN_EMAIL = "christiankanunga@gmail.com";
-    private static final String ADMIN_PASSWORD = "kanunga@27";
+    private static final String ADMIN_PASSWORD = "kanunga@2727";
 
 
     @Override

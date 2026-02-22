@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".App" 
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,11 +16,23 @@
         android:theme="@style/Theme.PHONE_SHOP_APP"
         android:usesCleartextTraffic="true">
 
+        <!-- The Cloudinary URL meta-data is no longer needed here -->
+
+        <!-- Declare all activities here -->
         <activity
             android:name=".AdminDashboard"
             android:exported="false" />
         <activity
             android:name=".AddPhoneActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManagePhonesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OrdersActivity"
+            android:exported="false" />
+         <activity
+            android:name=".MyOrdersActivity"
             android:exported="false" />
         <activity
             android:name=".Home"

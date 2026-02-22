@@ -51,8 +51,8 @@ public class Home extends AppCompatActivity {
             int id = menuItem.getItemId();
             if (id == R.id.nav_new_phone) {
                 startActivity(new Intent(Home.this, NewPhone.class));
-            } else if (id == R.id.nav_orders) {
-                startActivity(new Intent(Home.this, Orders.class));
+            } else if (id == R.id.nav_my_orders) { // Added this block
+                startActivity(new Intent(Home.this, MyOrdersActivity.class));
             } else if (id == R.id.nav_account) {
                 startActivity(new Intent(Home.this, Account.class));
             } else if (id == R.id.nav_settings) {

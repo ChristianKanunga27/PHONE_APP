@@ -19,12 +19,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManagePhonesActivity extends AppCompatActivity {
+// Implement the listener interface from the new adapter
+public class ManagePhonesActivity extends AppCompatActivity implements ManagePhoneAdapter.OnPhoneListener {
 
     private RecyclerView recyclerView;
     private List<PhoneModel> phoneList = new ArrayList<>();
     private FirebaseFirestore db;
-    private PhoneAdapter adapter;
+    private ManagePhoneAdapter adapter; // Use the new ManagePhoneAdapter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +37,14 @@ public class ManagePhonesActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        // NOTE: You may need a different adapter that can handle edit/delete clicks
-        // for the manage screen.
-        adapter = new PhoneAdapter(this, phoneList);
+        // Initialize the new adapter, passing 'this' as the listener
+        adapter = new ManagePhoneAdapter(this, phoneList, this);
         recyclerView.setAdapter(adapter);
 
         loadPhones();
     }
 
     private void loadPhones() {
-        // FINAL FIX: Replaced brittle toObject() with robust, manual data parsing.
         db.collection("phones")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -53,26 +52,8 @@ public class ManagePhonesActivity extends AppCompatActivity {
                         phoneList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             try {
-                                PhoneModel phone = new PhoneModel();
-                                phone.setId(doc.getId()); // Use the setter, as you correctly identified
-
-                                if (doc.contains("name")) {
-                                    phone.setName(doc.getString("name"));
-                                }
-                                if (doc.contains("description")) {
-                                    phone.setDescription(doc.getString("description"));
-                                }
-                                if (doc.contains("imageUrl")) {
-                                    phone.setImageUrl(doc.getString("imageUrl"));
-                                }
-
-                                // Safely get the price, handling different number types
-                                if (doc.contains("price")) {
-                                    Object priceObject = doc.get("price");
-                                    if (priceObject instanceof Number) {
-                                        phone.setPrice(((Number) priceObject).doubleValue());
-                                    }
-                                }
+                                PhoneModel phone = doc.toObject(PhoneModel.class);
+                                phone.setId(doc.getId());
                                 phoneList.add(phone);
                             } catch (Exception e) {
                                 Log.e("FirestoreError", "Error parsing document " + doc.getId(), e);
@@ -86,6 +67,35 @@ public class ManagePhonesActivity extends AppCompatActivity {
                 });
     }
 
+    @Override
+    public void onEditClicked(PhoneModel phone) {
+        showEditDialog(phone);
+    }
+
+    @Override
+    public void onDeleteClicked(PhoneModel phone) {
+        showDeleteConfirmationDialog(phone);
+    }
+
+    private void showDeleteConfirmationDialog(PhoneModel phone) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Phone")
+                .setMessage("Are you sure you want to delete '" + phone.getName() + "'?")
+                .setPositiveButton("Delete", (dialog, which) -> deletePhone(phone))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void deletePhone(PhoneModel phone) {
+        db.collection("phones").document(phone.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Phone deleted successfully", Toast.LENGTH_SHORT).show();
+                    loadPhones(); // Refresh the list
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Error deleting phone: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
     public void showEditDialog(PhoneModel phone) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit Phone");
@@ -95,17 +105,17 @@ public class ManagePhonesActivity extends AppCompatActivity {
         int padding = (int) (16 * getResources().getDisplayMetrics().density);
         layout.setPadding(padding, padding, padding, padding);
 
-        EditText inputName = new EditText(this);
+        final EditText inputName = new EditText(this);
         inputName.setHint("Name");
         inputName.setText(phone.getName());
         layout.addView(inputName);
 
-        EditText inputDesc = new EditText(this);
+        final EditText inputDesc = new EditText(this);
         inputDesc.setHint("Description");
         inputDesc.setText(phone.getDescription());
         layout.addView(inputDesc);
 
-        EditText inputPrice = new EditText(this);
+        final EditText inputPrice = new EditText(this);
         inputPrice.setHint("Price");
         inputPrice.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         inputPrice.setText(String.valueOf(phone.getPrice()));
@@ -124,22 +134,16 @@ public class ManagePhonesActivity extends AppCompatActivity {
                 return;
             }
 
-            // Correctly use the getter for the private 'id' field
             DocumentReference docRef = db.collection("phones").document(phone.getId());
-            docRef.update(
-                    "name", newName,
-                    "description", newDesc,
-                    "price", newPrice
-            ).addOnSuccessListener(aVoid -> {
-                Toast.makeText(this, "Phone updated", Toast.LENGTH_SHORT).show();
-                loadPhones();
-            }).addOnFailureListener(e ->
-                    Toast.makeText(this, "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-            );
+            docRef.update("name", newName, "description", newDesc, "price", newPrice)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Phone updated", Toast.LENGTH_SHORT).show();
+                        loadPhones();
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-
         builder.show();
     }
 }

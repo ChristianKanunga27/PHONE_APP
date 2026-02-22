@@ -1,81 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/white">
+    app:cardElevation="4dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvOrderId"
+            android:id="@+id/tvOrderPhoneName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Order #12345"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#1a1a1a"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:text="Phone Name"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvOrderUserEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="user@example.com" />
+
+        <TextView
+            android:id="@+id/tvOrderUserPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="+1234567890" />
+
+        <TextView
+            android:id="@+id/tvOrderPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="TZS 1,500,000.00" />
 
         <TextView
             android:id="@+id/tvOrderDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Feb 16, 2026"
-            android:textSize="12sp"
-            android:textColor="#999999"
-            app:layout_constraintTop_toBottomOf="@id/tvOrderId"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="4dp" />
-
-        <TextView
-            android:id="@+id/tvOrderStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delivered"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_green_dark"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:background="#E8F5E9"
-            app:layout_constraintTop_toTopOf="@id/tvOrderId"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/tvOrderAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="$499.99"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#1976D2"
-            app:layout_constraintTop_toBottomOf="@id/tvOrderDate"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp" />
-
-        <ImageView
-            android:id="@+id/ivArrow"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_phone"
-            android:contentDescription="View details"
-            android:scaleType="centerInside"
-            app:layout_constraintTop_toBottomOf="@id/tvOrderDate"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp"
-            app:tint="#1976D2" />
+            android:text="2024-05-19" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
-</androidx.cardview.widget.CardView>
-
+</com.google.android.material.card.MaterialCardView>

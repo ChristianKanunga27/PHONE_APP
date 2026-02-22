@@ -1,9 +1,7 @@
-
 package com.example.phone_shop_app;
 
 import android.app.Application;
 import com.cloudinary.android.MediaManager;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,12 +10,11 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // This is the correct way to initialize Cloudinary.
-        // It uses a config map.
+        // DEFINITIVE FIX: This is the correct way to initialize the Cloudinary SDK
+        // using a configuration map.
         Map<String, String> config = new HashMap<>();
         config.put("cloud_name", "duppdvfdg");
-        config.put("api_key", "435388717449898");
-        // No API secret in client-side code
+        // No API key or secret is needed for unsigned uploads on the client side
         MediaManager.init(this, config);
     }
 }

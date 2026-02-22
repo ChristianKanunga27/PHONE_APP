@@ -2,12 +2,9 @@ package com.example.phone_shop_app;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,57 +15,41 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Orders extends AppCompatActivity {
+public class OrdersActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerViewOrders;
-    private OrdersAdapter ordersAdapter;
+    private RecyclerView recyclerView;
+    private OrderAdapter adapter;
     private List<OrderModel> orderList;
     private FirebaseFirestore db;
-    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Client Orders");
-        }
+        setSupportActionBar(findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        recyclerView = findViewById(R.id.recyclerViewOrders);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        orderList = new ArrayList<>();
+        adapter = new OrderAdapter(this, orderList);
+        recyclerView.setAdapter(adapter);
 
         db = FirebaseFirestore.getInstance();
-        progressBar = findViewById(R.id.progressBar_orders);
-        recyclerViewOrders = findViewById(R.id.recyclerViewOrders);
-
-        orderList = new ArrayList<>();
-        ordersAdapter = new OrdersAdapter(orderList);
-        recyclerViewOrders.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewOrders.setAdapter(ordersAdapter);
-
-        fetchOrders();
+        loadOrders();
     }
 
-    private void fetchOrders() {
-        if (progressBar != null) {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-        recyclerViewOrders.setVisibility(View.GONE);
-
+    private void loadOrders() {
         db.collection("orders")
                 .orderBy("orderDate", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (progressBar != null) {
-                        progressBar.setVisibility(View.GONE);
-                    }
-                    recyclerViewOrders.setVisibility(View.VISIBLE);
-
                     if (task.isSuccessful()) {
                         orderList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             try {
+                                // --- DEFINITIVE FIX: Using robust, manual data parsing ---
                                 OrderModel order = new OrderModel();
                                 order.setOrderId(doc.getId());
 
@@ -78,25 +59,28 @@ public class Orders extends AppCompatActivity {
                                 if (doc.contains("userEmail")) {
                                     order.setUserEmail(doc.getString("userEmail"));
                                 }
+                                if (doc.contains("userPhoneNumber")) {
+                                    order.setUserPhoneNumber(doc.getString("userPhoneNumber"));
+                                }
                                 if (doc.contains("price")) {
-                                    order.setPrice(doc.getDouble("price"));
+                                    Object priceObject = doc.get("price");
+                                    if (priceObject instanceof Number) {
+                                        order.setPrice(((Number) priceObject).doubleValue());
+                                    }
                                 }
                                 if (doc.contains("orderDate")) {
                                     order.setOrderDate(doc.getDate("orderDate"));
                                 }
+
                                 orderList.add(order);
                             } catch (Exception e) {
-                                Log.e("OrdersActivity", "Error parsing order: " + doc.getId(), e);
+                                Log.e("FirestoreError", "Error parsing document " + doc.getId(), e);
                             }
                         }
-                        ordersAdapter.notifyDataSetChanged();
-
-                        if (orderList.isEmpty()) {
-                            Toast.makeText(this, "No orders have been placed yet.", Toast.LENGTH_SHORT).show();
-                        }
+                        adapter.notifyDataSetChanged();
                     } else {
-                        Log.e("OrdersActivity", "Error fetching orders: ", task.getException());
-                        Toast.makeText(this, "Failed to load orders.", Toast.LENGTH_SHORT).show();
+                        Log.e("FirestoreError", "Error getting orders: ", task.getException());
+                        Toast.makeText(this, "Failed to load orders", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
