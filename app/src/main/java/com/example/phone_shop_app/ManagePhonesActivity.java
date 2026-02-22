@@ -3,6 +3,7 @@ package com.example.phone_shop_app;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -35,7 +36,8 @@ public class ManagePhonesActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        // Use Admin Adapter that has edit/delete functionality
+        // NOTE: You may need a different adapter that can handle edit/delete clicks
+        // for the manage screen.
         adapter = new PhoneAdapter(this, phoneList);
         recyclerView.setAdapter(adapter);
 
@@ -43,18 +45,42 @@ public class ManagePhonesActivity extends AppCompatActivity {
     }
 
     private void loadPhones() {
+        // FINAL FIX: Replaced brittle toObject() with robust, manual data parsing.
         db.collection("phones")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         phoneList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            PhoneModel phone = doc.toObject(PhoneModel.class);
-                            phone.id = doc.getId(); // store Firestore ID
-                            phoneList.add(phone);
+                            try {
+                                PhoneModel phone = new PhoneModel();
+                                phone.setId(doc.getId()); // Use the setter, as you correctly identified
+
+                                if (doc.contains("name")) {
+                                    phone.setName(doc.getString("name"));
+                                }
+                                if (doc.contains("description")) {
+                                    phone.setDescription(doc.getString("description"));
+                                }
+                                if (doc.contains("imageUrl")) {
+                                    phone.setImageUrl(doc.getString("imageUrl"));
+                                }
+
+                                // Safely get the price, handling different number types
+                                if (doc.contains("price")) {
+                                    Object priceObject = doc.get("price");
+                                    if (priceObject instanceof Number) {
+                                        phone.setPrice(((Number) priceObject).doubleValue());
+                                    }
+                                }
+                                phoneList.add(phone);
+                            } catch (Exception e) {
+                                Log.e("FirestoreError", "Error parsing document " + doc.getId(), e);
+                            }
                         }
                         adapter.notifyDataSetChanged();
                     } else {
+                        Log.e("FirestoreError", "Error getting documents: ", task.getException());
                         Toast.makeText(this, "Failed to load phones", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -98,7 +124,8 @@ public class ManagePhonesActivity extends AppCompatActivity {
                 return;
             }
 
-            DocumentReference docRef = db.collection("phones").document(phone.id);
+            // Correctly use the getter for the private 'id' field
+            DocumentReference docRef = db.collection("phones").document(phone.getId());
             docRef.update(
                     "name", newName,
                     "description", newDesc,

@@ -2,6 +2,7 @@ package com.example.phone_shop_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -88,12 +89,37 @@ public class Home extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         phoneList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            PhoneModel phone = doc.toObject(PhoneModel.class);
-                            phoneList.add(phone);
+                            try {
+                                // --- Manual and Safe Data Parsing ---
+                                PhoneModel phone = new PhoneModel();
+                                phone.setId(doc.getId());
+
+                                if (doc.contains("name")) {
+                                    phone.setName(doc.getString("name"));
+                                }
+                                if (doc.contains("description")) {
+                                    phone.setDescription(doc.getString("description"));
+                                }
+                                if (doc.contains("imageUrl")) {
+                                    phone.setImageUrl(doc.getString("imageUrl"));
+                                }
+
+                                // Safely get the price, handling different number types
+                                if (doc.contains("price")) {
+                                    Object priceObject = doc.get("price");
+                                    if (priceObject instanceof Number) {
+                                        phone.setPrice(((Number) priceObject).doubleValue());
+                                    }
+                                }
+                                phoneList.add(phone);
+                            } catch (Exception e) {
+                                Log.e("FirestoreError", "Error parsing document " + doc.getId(), e);
+                            }
                         }
                         adapter.notifyDataSetChanged();
                     } else {
-                        Toast.makeText(Home.this, "Failed to load phones: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Log.e("FirestoreError", "Error getting documents: ", task.getException());
+                        Toast.makeText(Home.this, "Failed to load phones.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

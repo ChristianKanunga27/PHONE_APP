@@ -66,7 +66,7 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.PhoneViewHol
             tvName = itemView.findViewById(R.id.tvPhoneName);
             tvDescription = itemView.findViewById(R.id.tvPhoneDescription);
             tvPrice = itemView.findViewById(R.id.tvPhonePrice);
-            imgPhone = itemView.findViewById(R.id.imgPhoneItem);
+            imgPhone = itemView.findViewById(R.id.imgPhoneItem); // Corrected ID
             btnBuy = itemView.findViewById(R.id.btnBuy);
         }
     }
