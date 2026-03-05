@@ -5,8 +5,7 @@
         android:id="@+id/nav_admin_dashboard"
         android:title="Dashboard"
         android:icon="@drawable/ic_dashboar"/>
-
-    <item
+     <item
         android:id="@+id/nav_add_phone"
         android:title="Add Phone"
         android:icon="@drawable/ic_add"/>

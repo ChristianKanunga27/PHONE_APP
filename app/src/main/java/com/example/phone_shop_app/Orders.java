@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Orders extends AppCompatActivity {
@@ -39,11 +39,13 @@ public class Orders extends AppCompatActivity {
         }
 
         db = FirebaseFirestore.getInstance();
-        progressBar = findViewById(R.id.progressBar_orders);
+        // ✅ CORRECTED: Using the correct ID from activity_orders.xml
+        progressBar = findViewById(R.id.progressBarOrders);
         recyclerViewOrders = findViewById(R.id.recyclerViewOrders);
 
         orderList = new ArrayList<>();
-        ordersAdapter = new OrdersAdapter(orderList);
+        // ✅ CORRECTED: Passing the context to the adapter
+        ordersAdapter = new OrdersAdapter(this, orderList);
         recyclerViewOrders.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewOrders.setAdapter(ordersAdapter);
 
@@ -56,8 +58,8 @@ public class Orders extends AppCompatActivity {
         }
         recyclerViewOrders.setVisibility(View.GONE);
 
+        // ✅ ROBUST: Fetching all orders and sorting on the client to prevent crashes
         db.collection("orders")
-                .orderBy("orderDate", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (progressBar != null) {
@@ -69,26 +71,21 @@ public class Orders extends AppCompatActivity {
                         orderList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             try {
-                                OrderModel order = new OrderModel();
+                                // Using toObject for safer parsing
+                                OrderModel order = doc.toObject(OrderModel.class);
                                 order.setOrderId(doc.getId());
-
-                                if (doc.contains("phoneName")) {
-                                    order.setPhoneName(doc.getString("phoneName"));
-                                }
-                                if (doc.contains("userEmail")) {
-                                    order.setUserEmail(doc.getString("userEmail"));
-                                }
-                                if (doc.contains("price")) {
-                                    order.setPrice(doc.getDouble("price"));
-                                }
-                                if (doc.contains("orderDate")) {
-                                    order.setOrderDate(doc.getDate("orderDate"));
-                                }
                                 orderList.add(order);
                             } catch (Exception e) {
                                 Log.e("OrdersActivity", "Error parsing order: " + doc.getId(), e);
                             }
                         }
+                        
+                        // Sorting on the client is more reliable
+                        Collections.sort(orderList, (o1, o2) -> {
+                            if (o1.getOrderDate() == null || o2.getOrderDate() == null) return 0;
+                            return o2.getOrderDate().compareTo(o1.getOrderDate());
+                        });
+                        
                         ordersAdapter.notifyDataSetChanged();
 
                         if (orderList.isEmpty()) {

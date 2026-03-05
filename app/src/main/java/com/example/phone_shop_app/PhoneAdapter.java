@@ -1,12 +1,12 @@
 package com.example.phone_shop_app;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.text.InputType;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,7 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -53,33 +55,47 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.PhoneViewHol
 
         Glide.with(context)
                 .load(phone.getImageUrl())
-                .placeholder(R.drawable.ic_launcher_background) 
-                .error(R.drawable.ic_launcher_background) 
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_background)
                 .into(holder.imgPhone);
 
-        holder.btnBuy.setOnClickListener(v -> showPhoneNumberDialog(phone));
+        holder.btnBuy.setOnClickListener(v -> showPhoneNumberBottomSheet(phone));
     }
 
-    private void showPhoneNumberDialog(PhoneModel phone) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Confirm Purchase");
+    private void showPhoneNumberBottomSheet(PhoneModel phone) {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_complete_order, null);
+        bottomSheetDialog.setContentView(view);
 
-        final EditText input = new EditText(context);
-        input.setHint("Enter your phone number");
-        input.setInputType(InputType.TYPE_CLASS_PHONE);
-        builder.setView(input);
+        EditText etPhoneNumber = view.findViewById(R.id.etPhoneNumber);
+        TextInputLayout tilPhone = view.findViewById(R.id.tilPhone);
+        Button btnConfirmOrder = view.findViewById(R.id.btnConfirmOrder);
 
-        builder.setPositiveButton("Confirm", (dialog, which) -> {
-            String phoneNumber = input.getText().toString().trim();
+        btnConfirmOrder.setOnClickListener(v -> {
+            String phoneNumber = etPhoneNumber.getText().toString().trim();
+            
+            // Validation
             if (phoneNumber.isEmpty()) {
-                Toast.makeText(context, "Phone number is required", Toast.LENGTH_SHORT).show();
+                tilPhone.setError("Phone number is required");
                 return;
             }
-            createOrder(phone, phoneNumber);
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+            if (!android.util.Patterns.PHONE.matcher(phoneNumber).matches() || phoneNumber.length() < 10) {
+                tilPhone.setError("Enter a valid phone number");
+                return;
+            }
 
-        builder.show();
+            tilPhone.setError(null);
+            btnConfirmOrder.setEnabled(false);
+            btnConfirmOrder.setText("Processing...");
+
+            // Delayed success message (2 seconds) as requested
+            new Handler().postDelayed(() -> {
+                createOrder(phone, phoneNumber);
+                bottomSheetDialog.dismiss();
+            }, 2000);
+        });
+
+        bottomSheetDialog.show();
     }
 
     private void createOrder(PhoneModel phone, String phoneNumber) {
@@ -104,7 +120,7 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.PhoneViewHol
         db.collection("orders")
                 .add(order)
                 .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(context, "Order placed successfully!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Order Success! We will call you at " + phoneNumber, Toast.LENGTH_LONG).show();
                     Log.d("OrderSuccess", "Order created with ID: " + documentReference.getId());
                 })
                 .addOnFailureListener(e -> {

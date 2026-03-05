@@ -9,15 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
-    private final List<OrderModel> orderList;
     private final Context context;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+    private final List<OrderModel> orderList;
 
     public OrderAdapter(Context context, List<OrderModel> orderList) {
         this.context = context;
@@ -36,13 +33,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         OrderModel order = orderList.get(position);
 
         holder.tvPhoneName.setText(order.getPhoneName());
-        holder.tvUserEmail.setText(order.getUserEmail());
-        holder.tvUserPhone.setText(order.getUserPhoneNumber()); // Display phone number
-        holder.tvPrice.setText(String.format(Locale.getDefault(), "TZS %,.2f", order.getPrice()));
-        
-        if (order.getOrderDate() != null) {
-            holder.tvOrderDate.setText(dateFormat.format(order.getOrderDate()));
-        }
+        holder.tvOrderPrice.setText("Price: TZS " + String.format("%,.2f", order.getPrice()));
+        holder.tvUserEmail.setText("User: " + order.getUserEmail());
+        holder.tvUserPhone.setText("Contact: " + order.getUserPhoneNumber());
+        holder.tvOrderId.setText("Order ID: " + order.getOrderId());
     }
 
     @Override
@@ -51,15 +45,15 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     }
 
     public static class OrderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPhoneName, tvUserEmail, tvPrice, tvOrderDate, tvUserPhone;
+        TextView tvPhoneName, tvOrderPrice, tvUserEmail, tvUserPhone, tvOrderId;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPhoneName = itemView.findViewById(R.id.tvOrderPhoneName);
+            tvOrderPrice = itemView.findViewById(R.id.tvOrderPrice);
             tvUserEmail = itemView.findViewById(R.id.tvOrderUserEmail);
-            tvUserPhone = itemView.findViewById(R.id.tvOrderUserPhone); // Find the new TextView
-            tvPrice = itemView.findViewById(R.id.tvOrderPrice);
-            tvOrderDate = itemView.findViewById(R.id.tvOrderDate);
+            tvUserPhone = itemView.findViewById(R.id.tvOrderUserPhone);
+            tvOrderId = itemView.findViewById(R.id.tvOrderId);
         }
     }
 }

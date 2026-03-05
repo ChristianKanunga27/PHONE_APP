@@ -32,11 +32,12 @@ public class CreateAccount extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Bind views
-        Button registerBtn = findViewById(R.id.button);
-        EditText edtEmail = findViewById(R.id.edtEmail);
-        EditText edtPassword = findViewById(R.id.edtPassword);
-        TextView loginText = findViewById(R.id.textView2);
+        // Bind views with correct IDs
+        Button registerBtn = findViewById(R.id.btnSignUp);
+        EditText edtName = findViewById(R.id.etName);
+        EditText edtEmail = findViewById(R.id.etEmail);
+        EditText edtPassword = findViewById(R.id.etPassword);
+        TextView loginText = findViewById(R.id.tvSignIn);
 
         // Click listener to go to Login screen
         loginText.setOnClickListener(v ->
@@ -45,10 +46,17 @@ public class CreateAccount extends AppCompatActivity {
         // Registration logic
         registerBtn.setOnClickListener(v -> {
 
+            String name = edtName.getText().toString().trim();
             String email = edtEmail.getText().toString().trim();
             String password = edtPassword.getText().toString().trim();
 
             // ✅ Input validation
+            if (name.isEmpty()) {
+                edtName.setError("Name is required");
+                edtName.requestFocus();
+                return;
+            }
+
             if (email.isEmpty()) {
                 edtEmail.setError("Email is required");
                 edtEmail.requestFocus();
@@ -89,6 +97,7 @@ public class CreateAccount extends AppCompatActivity {
 
                             // Prepare user data
                             Map<String, Object> user = new HashMap<>();
+                            user.put("name", name);
                             user.put("email", email);
                             user.put("role", "user"); // default role
 

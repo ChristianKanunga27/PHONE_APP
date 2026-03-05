@@ -1,5 +1,6 @@
 package com.example.phone_shop_app;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,17 +15,19 @@ import java.util.Locale;
 
 public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.OrderViewHolder> {
 
+    private final Context context;
     private final List<OrderModel> orderList;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy, hh:mm a", Locale.getDefault());
 
-    public OrdersAdapter(List<OrderModel> orderList) {
+    public OrdersAdapter(Context context, List<OrderModel> orderList) {
+        this.context = context;
         this.orderList = orderList;
     }
 
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_order, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_order, parent, false);
         return new OrderViewHolder(view);
     }
 
@@ -33,13 +36,16 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.OrderViewH
         OrderModel order = orderList.get(position);
 
         holder.tvPhoneName.setText(order.getPhoneName());
-        holder.tvUserEmail.setText(order.getUserEmail());
-        holder.tvPrice.setText(String.format(Locale.getDefault(), "TZS %,.2f", order.getPrice()));
+        holder.tvOrderPrice.setText("Price: TZS " + String.format("%,.2f", order.getPrice()));
+        holder.tvUserEmail.setText("User: " + order.getUserEmail());
+        holder.tvUserPhone.setText("Contact: " + order.getUserPhoneNumber());
+        holder.tvOrderId.setText("Order ID: " + order.getOrderId());
 
+        // ✅ CORRECTLY Format and display the date
         if (order.getOrderDate() != null) {
-            holder.tvOrderDate.setText(dateFormat.format(order.getOrderDate()));
+            holder.tvOrderDate.setText("Date: " + dateFormat.format(order.getOrderDate()));
         } else {
-            holder.tvOrderDate.setText("Date not available");
+            holder.tvOrderDate.setText("Date: Not available");
         }
     }
 
@@ -49,13 +55,16 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.OrderViewH
     }
 
     public static class OrderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPhoneName, tvUserEmail, tvPrice, tvOrderDate;
+        TextView tvPhoneName, tvOrderPrice, tvUserEmail, tvUserPhone, tvOrderId, tvOrderDate;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPhoneName = itemView.findViewById(R.id.tvOrderPhoneName);
+            tvOrderPrice = itemView.findViewById(R.id.tvOrderPrice);
             tvUserEmail = itemView.findViewById(R.id.tvOrderUserEmail);
-            tvPrice = itemView.findViewById(R.id.tvOrderPrice);
+            tvUserPhone = itemView.findViewById(R.id.tvOrderUserPhone);
+            tvOrderId = itemView.findViewById(R.id.tvOrderId);
+            // ✅ CORRECTLY find the date TextView
             tvOrderDate = itemView.findViewById(R.id.tvOrderDate);
         }
     }

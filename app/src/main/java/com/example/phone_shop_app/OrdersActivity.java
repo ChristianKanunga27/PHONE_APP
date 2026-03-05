@@ -2,6 +2,8 @@ package com.example.phone_shop_app;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,10 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class OrdersActivity extends AppCompatActivity {
@@ -21,6 +23,7 @@ public class OrdersActivity extends AppCompatActivity {
     private OrderAdapter adapter;
     private List<OrderModel> orderList;
     private FirebaseFirestore db;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +31,12 @@ public class OrdersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_orders);
 
         setSupportActionBar(findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         recyclerView = findViewById(R.id.recyclerViewOrders);
+        progressBar = findViewById(R.id.progressBarOrders);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         orderList = new ArrayList<>();
         adapter = new OrderAdapter(this, orderList);
@@ -41,46 +47,39 @@ public class OrdersActivity extends AppCompatActivity {
     }
 
     private void loadOrders() {
+        progressBar.setVisibility(View.VISIBLE);
         db.collection("orders")
-                .orderBy("orderDate", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
+                    progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         orderList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             try {
-                                // --- DEFINITIVE FIX: Using robust, manual data parsing ---
-                                OrderModel order = new OrderModel();
+                                OrderModel order = doc.toObject(OrderModel.class);
                                 order.setOrderId(doc.getId());
-
-                                if (doc.contains("phoneName")) {
-                                    order.setPhoneName(doc.getString("phoneName"));
-                                }
-                                if (doc.contains("userEmail")) {
-                                    order.setUserEmail(doc.getString("userEmail"));
-                                }
-                                if (doc.contains("userPhoneNumber")) {
-                                    order.setUserPhoneNumber(doc.getString("userPhoneNumber"));
-                                }
-                                if (doc.contains("price")) {
-                                    Object priceObject = doc.get("price");
-                                    if (priceObject instanceof Number) {
-                                        order.setPrice(((Number) priceObject).doubleValue());
-                                    }
-                                }
-                                if (doc.contains("orderDate")) {
-                                    order.setOrderDate(doc.getDate("orderDate"));
-                                }
-
                                 orderList.add(order);
                             } catch (Exception e) {
                                 Log.e("FirestoreError", "Error parsing document " + doc.getId(), e);
                             }
                         }
+                        
+                        // Sort the list by date in descending order (newest first)
+                        Collections.sort(orderList, (o1, o2) -> {
+                            if (o1.getOrderDate() == null || o2.getOrderDate() == null) {
+                                return 0;
+                            }
+                            return o2.getOrderDate().compareTo(o1.getOrderDate());
+                        });
+                        
                         adapter.notifyDataSetChanged();
+
+                        if (orderList.isEmpty()) {
+                            Toast.makeText(this, "No orders found.", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Log.e("FirestoreError", "Error getting orders: ", task.getException());
-                        Toast.makeText(this, "Failed to load orders", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Failed to load orders.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
